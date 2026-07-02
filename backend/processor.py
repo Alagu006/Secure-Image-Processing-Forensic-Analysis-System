@@ -348,8 +348,18 @@ def _run_yolo(img_bgr, operation, params):
         cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness)
 
         (tw, th), _ = cv2.getTextSize(label_text, font, font_scale, thickness)
-        cv2.rectangle(annotated, (x1, y1 - th - 8), (x1 + tw + 8, y1), color, -1)
-        cv2.putText(annotated, label_text, (x1 + 4, y1 - 5), font, font_scale, (255, 255, 255), thickness)
+        pad = 4
+        lx1 = x1
+        lx2 = x1 + tw + pad * 2
+        if lx2 > x2:
+            lx1 = max(0, min(x1, x2 - (tw + pad * 2)))
+            lx2 = lx1 + tw + pad * 2
+        if lx1 < 0:
+            lx1 = 0
+            lx2 = min(lx1 + tw + pad * 2, w)
+        ly1 = max(0, y1 - th - pad * 2)
+        cv2.rectangle(annotated, (lx1, ly1), (lx2, y1), color, -1)
+        cv2.putText(annotated, label_text, (lx1 + pad, y1 - pad), font, font_scale, (255, 255, 255), thickness)
 
     # Legend
     lx, ly = 12, 20

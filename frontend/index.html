@@ -38,6 +38,28 @@ if (location.protocol === 'file:') {
   --radius-sm: 6px;
   --shadow: 0 2px 16px rgba(0,0,0,0.4);
 }
+[data-theme="light"] {
+  --bg: #f5f5f7;
+  --bg-secondary: #ffffff;
+  --bg-card: #f0f0f2;
+  --bg-hover: #e8e8ec;
+  --bg-elevated: #e0e0e6;
+  --text: #1a1a2e;
+  --text-secondary: #6b6b76;
+  --text-muted: #94949e;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-glow: rgba(99,102,241,0.15);
+  --success: #16a34a;
+  --success-bg: rgba(22,163,74,0.08);
+  --warning: #d97706;
+  --warning-bg: rgba(217,119,6,0.08);
+  --danger: #dc2626;
+  --danger-bg: rgba(220,38,38,0.08);
+  --border: #d4d4d8;
+  --border-light: #c0c0c8;
+  --shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -263,10 +285,11 @@ header .version-badge {
 .op-card .op-name .lib-badge { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
   padding: 2px 6px; border-radius: 3px; background: var(--bg-elevated); color: var(--text-muted); }
 .op-card .params { display: flex; flex-direction: column; gap: 6px; }
-.op-card .param-row { display: flex; align-items: center; gap: 8px; }
-.op-card .param-row label { font-size: 11px; color: var(--text-muted); min-width: 50px; }
-.op-card .param-row input[type=range] { flex: 1; accent-color: var(--accent); height: 4px; }
-.op-card .param-row .val { font-size: 11px; color: var(--text-secondary); min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+.op-card .param-row { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.op-card .param-row label { font-size: 11px; color: var(--text-muted); min-width: 40px; flex-shrink: 0; }
+.op-card .param-row .range-label { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+.op-card .param-row input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); height: 4px; }
+.op-card .param-row .val { font-size: 11px; color: var(--text-secondary); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .op-card .param-row input[type=number] {
   width: 60px; padding: 2px 6px; background: var(--bg); border: 1px solid var(--border-light);
   border-radius: 3px; color: var(--text); font-size: 12px; font-family: inherit;
@@ -399,6 +422,13 @@ header .version-badge {
 }
 .toggle-switch input:checked + .toggle-slider { background:var(--accent); border-color:var(--accent); }
 .toggle-switch input:checked + .toggle-slider::before { transform:translateX(18px); background:#fff; }
+.theme-btn {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:50%;
+  width:34px; height:34px; cursor:pointer; font-size:16px; line-height:1;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition:all .2s; color:var(--text);
+}
+.theme-btn:hover { border-color:var(--accent); background:var(--bg-hover); }
 
 /* Batch results table */
 .batch-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:16px; }
@@ -464,9 +494,11 @@ header .version-badge {
 .view-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
 
 /* Heatmap legend */
-.heatmap-legend { display:flex; align-items:center; gap:8px; margin-top:10px; justify-content:center; }
-.heatmap-legend .bar { width:300px; height:16px; border-radius:8px; background:linear-gradient(to right,#000080,#0000ff,#00ffff,#00ff00,#ffff00,#ff0000); cursor:help; }
-.heatmap-legend .label { font-size:11px; color:var(--text-muted); font-weight:500; }
+.heatmap-legend { display:flex; align-items:center; margin-top:10px; justify-content:center; }
+.heatmap-legend .bar { position:relative; width:240px; max-width:85vw; height:18px; border-radius:9px; background:linear-gradient(to right,#000080,#0000ff,#00ffff,#00ff00,#ffff00,#ff0000); cursor:help; }
+.heatmap-legend .label { position:absolute; top:50%; transform:translateY(-50%); font-size:10px; font-weight:600; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.6); pointer-events:none; }
+.heatmap-legend .label.left { left:6px; }
+.heatmap-legend .label.right { right:6px; }
 
 /* Zone tooltip */
 .zone-tooltip { position:fixed; pointer-events:none; z-index:999; background:rgba(0,0,0,0.85); color:#fff; padding:5px 10px; border-radius:6px; font-size:12px; white-space:nowrap; display:none; }
@@ -507,6 +539,9 @@ header .version-badge {
   animation:anime-glow 2s ease-in-out infinite;
   max-width:420px;
   width:90%;
+}
+[data-theme="light"] .anime-card {
+  background:linear-gradient(135deg,#f0f0ff 0%,#f5e8ff 50%,#f0f0ff 100%);
 }
 .anime-card::before {
   content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
@@ -564,11 +599,34 @@ header .version-badge {
     <h1 class="gradient-text">SecureVision</h1>
     <p class="tagline">Secure upload. Powerful processing.</p>
     <span class="version-badge">v2.0</span>
-    <div style="margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px">
+    <div style="margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">
       <label class="toggle-label" for="batchToggle">Batch Mode</label>
       <label class="toggle-switch"><input type="checkbox" id="batchToggle"><span class="toggle-slider"></span></label>
+      <button id="themeToggle" class="theme-btn" title="Toggle theme">🌙</button>
     </div>
   </header>
+
+  <!-- Anime Loading Overlay (hidden) -->
+  <div class="anime-overlay hidden" id="animeLoader">
+    <div class="anime-card">
+      <div class="anime-petal" style="left:10%;animation-delay:0s">🌸</div>
+      <div class="anime-petal" style="left:30%;animation-delay:1.2s">🌸</div>
+      <div class="anime-petal" style="left:55%;animation-delay:.6s">🌸</div>
+      <div class="anime-petal" style="left:80%;animation-delay:2s">🌸</div>
+      <div class="anime-petal" style="left:92%;animation-delay:1.8s">🌸</div>
+      <div class="anime-petal" style="left:18%;animation-delay:.3s">🌸</div>
+      <div class="anime-petal" style="left:70%;animation-delay:1.5s">🌸</div>
+      <div class="anime-sparkle" style="top:20%;left:15%;animation-delay:.2s"></div>
+      <div class="anime-sparkle" style="top:40%;right:10%;animation-delay:.8s"></div>
+      <div class="anime-sparkle" style="bottom:30%;left:20%;animation-delay:1.4s"></div>
+      <div class="anime-sparkle" style="top:15%;right:25%;animation-delay:2s"></div>
+      <span class="anime-character">⚡</span>
+      <div class="anime-character-sub">✦ image processing ✦</div>
+      <div class="anime-status" id="animeStatus">Initializing...</div>
+      <div class="anime-substatus" id="animeSubstatus">please wait a moment</div>
+      <div class="anime-track"><div class="anime-bar" id="animeBar"></div></div>
+    </div>
+  </div>
 
   <!-- Security Pipeline Status Bar -->
   <div class="section hidden" id="sec-pipeline-status" style="padding:16px 24px">
@@ -724,6 +782,27 @@ function base64ToBytes(b64) {
   return u8;
 }
 
+// --- Anime Loading Screen ---
+const animeLoader = document.getElementById('animeLoader');
+const animeStatus = document.getElementById('animeStatus');
+const animeSubstatus = document.getElementById('animeSubstatus');
+const animeBar = document.getElementById('animeBar');
+
+function showAnimeLoader(status, substatus, pct) {
+  animeStatus.textContent = status;
+  animeSubstatus.textContent = substatus;
+  animeBar.style.width = (pct || 0) + '%';
+  animeLoader.classList.remove('hidden');
+}
+function updateAnimeLoader(status, substatus, pct) {
+  if (status !== undefined) animeStatus.textContent = status;
+  if (substatus !== undefined) animeSubstatus.textContent = substatus;
+  if (pct !== undefined) animeBar.style.width = pct + '%';
+}
+function hideAnimeLoader() {
+  animeLoader.classList.add('hidden');
+}
+
 async function encryptFile(file) {
   const t0 = performance.now();
   const keyBytes = base64ToBytes(state.keyB64);
@@ -828,6 +907,20 @@ batchToggle.addEventListener('change', () => {
   }
 });
 
+// --- Theme ---
+const themeToggle = document.getElementById('themeToggle');
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeToggle.textContent = theme === 'light' ? '☀️' : '🌙';
+  localStorage.setItem('theme', theme);
+}
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  setTheme(cur === 'light' ? 'dark' : 'light');
+});
+const savedTheme = localStorage.getItem('theme') || 'dark';
+setTheme(savedTheme);
+
 // --- Toast ---
 let toastTimer;
 function showToast(msg, type='') {
@@ -878,30 +971,19 @@ async function handleSingleUpload(file) {
   formData.append('encrypted_image', encryptedBlob, 'image.enc');
   formData.append('session_id', state.sessionId);
 
-  scanProgress.classList.remove('hidden');
-  const steps = scanSteps.querySelectorAll('.scan-step');
-  steps.forEach(s => { s.className = 'scan-step'; });
-
-  let currentStep = -1;
-  const animateInterval = setInterval(() => {
-    currentStep++;
-    steps.forEach((s, i) => {
-      s.className = 'scan-step';
-      if (i < currentStep) s.classList.add('done');
-      else if (i === currentStep) s.classList.add('active');
-    });
-    if (currentStep >= steps.length - 1) clearInterval(animateInterval);
-  }, 400);
+  showAnimeLoader('⚡ Uploading...', 'encrypting & scanning image', 10);
+  setTimeout(() => updateAnimeLoader('🔍 Scanning...', 'checking magic bytes & headers', 35), 600);
+  setTimeout(() => updateAnimeLoader('📊 Analyzing...', 'entropy & polyglot detection', 60), 1400);
+  setTimeout(() => updateAnimeLoader('✨ Processing...', 'pixel re-encoding', 85), 2200);
 
   try {
     const res = await apiFetch(`${API}/upload`, { method: 'POST', body: formData });
-    clearInterval(animateInterval);
-    steps.forEach(s => s.className = 'scan-step done');
 
     const uploadMs = (performance.now() - uploadT0).toFixed(1);
     state.uploadMs = uploadMs;
 
     if (!res.ok) {
+      hideAnimeLoader();
       const body = await res.json().catch(() => ({}));
       const previewEl = document.querySelector('.file-preview');
       if (previewEl) previewEl.remove();
@@ -911,9 +993,10 @@ async function handleSingleUpload(file) {
       } else {
         showToast(body.detail || body.message || 'Upload failed', 'error');
       }
-      scanProgress.classList.add('hidden');
       return;
     }
+
+    updateAnimeLoader('✅ Complete!', 'finalizing results', 100);
 
     const data = await res.json();
     state.storedFilename = data.data.stored_filename;
@@ -935,14 +1018,13 @@ async function handleSingleUpload(file) {
     })();
 
     setTimeout(() => {
-      scanProgress.classList.add('hidden');
+      hideAnimeLoader();
       renderReport(data.data.scan);
       renderPipelineStatusBar();
     }, 500);
   } catch (err) {
-    clearInterval(animateInterval);
+    hideAnimeLoader();
     showToast('Connection to server failed', 'error');
-    scanProgress.classList.add('hidden');
   }
 }
 
@@ -975,18 +1057,29 @@ async function handleBatchUpload(files) {
     formData.append('files', f);
   }
 
+  showAnimeLoader('📤 Uploading...', `scanning ${limited.length} files`, 15);
+  const animInt = setInterval(() => {
+    const pct = Math.min(85, parseInt(animeBar.style.width) + 5);
+    animeBar.style.width = pct + '%';
+  }, 500);
+
   try {
     const res = await apiFetch(`${API}/batch-upload`, { method: 'POST', body: formData });
+    clearInterval(animInt);
     if (!res.ok) {
+      hideAnimeLoader();
       const body = await res.json().catch(() => ({}));
       showToast(body.detail || body.message || 'Batch upload failed', 'error');
       return;
     }
 
+    updateAnimeLoader('✅ Complete!', 'processing results', 100);
     const data = await res.json();
     state.batchScanResults = data.data.results || [];
-    renderBatchResults(data.data);
+    setTimeout(() => { hideAnimeLoader(); renderBatchResults(data.data); }, 400);
   } catch (err) {
+    clearInterval(animInt);
+    hideAnimeLoader();
     showToast('Connection to server failed', 'error');
   }
 }
@@ -1166,7 +1259,7 @@ function renderOps() {
           paramsHtml += `<div class="param-row"><label>${p.label}</label><input type="number" data-pkey="${p.key}" data-op="${op.name}" value="${p.def}" min="${p.min}" max="${p.max}" step="${p.step || 1}"></div>`;
         } else {
           const v = p.def;
-          paramsHtml += `<div class="param-row"><label>${p.label}</label><span style="font-size:10px;color:var(--text-muted)">Low</span><input type="range" data-pkey="${p.key}" data-op="${op.name}" value="${v}" min="${p.min}" max="${p.max}" step="${p.step || 1}"><span style="font-size:10px;color:var(--text-muted)">High</span><span class="val">${v}</span></div>`;
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><span class="range-label">Low</span><input type="range" data-pkey="${p.key}" data-op="${op.name}" value="${v}" min="${p.min}" max="${p.max}" step="${p.step || 1}"><span class="range-label">High</span><span class="val">${v}</span></div>`;
         }
       });
       return `<div class="op-card" data-op="${op.name}" data-lib="${lib}">
@@ -1299,12 +1392,12 @@ applyBtn.addEventListener('click', async () => {
 });
 
 async function applySinglePipeline() {
-  const overlay = document.createElement('div');
-  overlay.className = 'loading-overlay';
   const hasDetect = state.pipeline.some(op => (op.operation || op) === 'detect_objects');
-  overlay.innerHTML = `<div class="spinner"></div><div class="msg">${hasDetect ? 'Multi-scale detection in progress (~5s)...' : 'Applying operations...'}</div>`;
-  panelResult.style.position = 'relative';
-  panelResult.appendChild(overlay);
+  showAnimeLoader('🎨 Processing...', hasDetect ? 'running multi-scale detection' : 'applying image operations', 20);
+  const animInterval = setInterval(() => {
+    const pct = Math.min(85, parseInt(animeBar.style.width) + 8);
+    animeBar.style.width = pct + '%';
+  }, 800);
 
   try {
     const res = await apiFetch(`${API}/process?filename=${encodeURIComponent(state.storedFilename)}`, {
@@ -1312,7 +1405,9 @@ async function applySinglePipeline() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ operations: state.pipeline, session_id: state.sessionId }),
     });
+    clearInterval(animInterval);
     if (!res.ok) {
+      hideAnimeLoader();
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || err.message || 'Processing failed');
     }
@@ -1357,9 +1452,10 @@ async function applySinglePipeline() {
       <img src="" alt="Detection view">
     </div>
     <div id="heatmapLegend" class="heatmap-legend" style="display:none">
-      <span class="label">Low</span>
-      <div class="bar" title="Blue=no objects, Cyan=low conf, Green/Yellow=medium conf, Orange/Red=high conf / overlapping detections"></div>
-      <span class="label">High</span>
+      <div class="bar" title="Blue=no objects, Cyan=low conf, Green/Yellow=medium conf, Orange/Red=high conf / overlapping detections">
+        <span class="label left">Low</span>
+        <span class="label right">High</span>
+      </div>
     </div>`;
     initComparison();
 
@@ -1395,6 +1491,8 @@ async function applySinglePipeline() {
     showToast('\u2713 Pipeline applied', 'success');
     renderDetections(steps);
     renderPipelineStatusBar();
+    state.pipeline = [];
+    renderPipeline();
 
     // File size via Blob
     const sizeEl = downloadMeta.querySelector('.meta-item:first-child');
@@ -1404,7 +1502,7 @@ async function applySinglePipeline() {
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
-    overlay.remove();
+    hideAnimeLoader();
     panelResult.style.position = '';
   }
 }
@@ -1421,6 +1519,13 @@ async function applyBatchPipeline() {
     </div>`;
   }
   batchProgressList.innerHTML = html;
+
+  showAnimeLoader('📦 Batch Processing...', `0 / ${files.length} files`, 5);
+  const animInt = setInterval(() => {
+    const cur = animeBar.style.width;
+    const pct = Math.min(90, (parseInt(cur) || 5) + 3);
+    animeBar.style.width = pct + '%';
+  }, 600);
 
   try {
     const res = await apiFetch(`${API}/batch-process`, {
@@ -1465,11 +1570,17 @@ async function applyBatchPipeline() {
       downloadMeta.innerHTML = `<div class="meta-item"><div class="meta-label">Batch</div><div class="meta-value">${successCount} files processed</div></div>`;
       secDownload.classList.remove('hidden');
       setTimeout(() => batchDownloadBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300);
+      hideAnimeLoader();
       showToast(`\u2713 Batch complete: ${successCount}/${totalCount} processed`, 'success');
+      state.pipeline = [];
+      renderPipeline();
     } else {
+      hideAnimeLoader();
       showToast(`Batch processing failed for all ${totalCount} files`, 'error');
     }
   } catch (err) {
+    clearInterval(animInt);
+    hideAnimeLoader();
     showToast(err.message, 'error');
     // Mark all as error
     for (const f of files) {
